@@ -1,0 +1,20 @@
+{
+    "commodities": [
+      {
+        "name": "Gold",
+        "price": "$1,723.50",
+        "unit": "per ounce"
+      },
+      {
+        "name": "Crude oil",
+        "price": "$61.50",
+        "unit": "per barrel"
+      },
+      {
+        "name": "Corn",
+        "price": "$5.50",
+        "unit": "per bushel"
+      }
+    ]
+  }
+  
