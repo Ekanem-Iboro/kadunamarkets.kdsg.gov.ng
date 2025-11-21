@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 import Link from 'next/link'
 import { FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa'
 import NewHead from './NewHead'
-// import { Firestore } from 'firebase/firestore'
+import { Firestore } from 'firebase/firestore'
 
 interface newStuff {
     id: number,

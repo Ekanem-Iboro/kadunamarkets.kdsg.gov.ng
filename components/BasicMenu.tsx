@@ -27,7 +27,7 @@ export default function BasicMenu() {
         onClick={handleClick}
         className="!capitalize !text-white"
       >
-        <FaBars className='w-5 h-5 mt-5' />
+        <FaBars className="w-5 h-5 mt-5" />
       </Button>
       <Menu
         id="basic-menu"
@@ -39,33 +39,39 @@ export default function BasicMenu() {
           'aria-labelledby': 'basic-button',
         }}
       >
-        <Link href={"/"}>
-            <MenuItem onClick={handleClose}>Home</MenuItem>
-        </Link>
-        <Link href={"https://kadunamarkets.kdsg.gov.ng"}  target={"_blank"}>
-            <MenuItem onClick={handleClose}>Book Now</MenuItem>
-        </Link>
-        <Link href={"/about"}>
-            <MenuItem onClick={handleClose}>About</MenuItem>
-        </Link>
-        <Link href={"/news"}>
-            <MenuItem onClick={handleClose}>News</MenuItem>
-        </Link>
-        <Link href={"/publications"}>
-            <MenuItem onClick={handleClose}>Publications</MenuItem>
-        </Link>
-        <Link href={"/projects"}>
-            <MenuItem onClick={handleClose}>Projects</MenuItem>  
-        </Link>
-        <Link href={"/gallery"}>
-            <MenuItem onClick={handleClose}>Gallery</MenuItem>  
-        </Link>
-        <Link href={"/https://kadunamarketjobs.roundstone.solutions"}>
-            <MenuItem onClick={handleClose}>Careers</MenuItem>  
-        </Link>
-        <Link href={"/contact"}>
-            <MenuItem onClick={handleClose}>Contact</MenuItem>
-        </Link>
+        <MenuItem onClick={handleClose}>
+          <Link href={'/'}>Home</Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <a href={'/hall'}>Book Hall</a>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link href={'/about'}>About</Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link href={'/news'}>News</Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link href={'/publications'}>Publications</Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link href={'/projects'}>Projects</Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link href={'/gallery'}>Gallery</Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <a
+            href={'https://kadunamarketjobs.roundstone.solutions'}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Careers
+          </a>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link href={'/contact'}>Contact</Link>
+        </MenuItem>
       </Menu>
     </div>
   )

@@ -1,0 +1,233 @@
+//   try {
+//             // Fetch transaction status
+//             const transactionResponse = await fetch(
+//                 `https://core-api.mybalanceapp.com/v1/console/transactions/${bookingData.transactionReference}`,
+//                 {
+//                     method: 'GET'
+//                 }
+//             );
+
+//             const transactionResult = await transactionResponse.json();
+
+//             const mStartDate = formatDate(bookingData.fromDate);
+//             const mEndDate = formatDate(bookingData.toDate);
+//             const mDisplayDate = bookingData.fromDate === bookingData.toDate
+//                 ? mStartDate
+//                 : `${mStartDate} - ${mEndDate}`;
+
+//             let emailSubject = `Booking Confirmation - Transaction Reference ${bookingData.transactionReference}`;
+//             let emailBody = `Dear ${customerFullname || 'Valued Customer'},<br><br>`;
+//             let transactionStatusApi = 'UNKNOWN';
+
+//             if (transactionResult.success && transactionResult.data?.status) {
+//                 transactionStatusApi = transactionResult.data.status;
+
+//                 if (transactionStatusApi === 'SUCCESSFUL') {
+//                     emailBody += `Good news! Your payment for the booking of <strong>${bookingData.hallName}</strong> (Transaction Ref: <strong>${bookingData.transactionReference}</strong>) has been successfully confirmed.<br><br>`;
+//                     emailBody += `Your booking is now active. We look forward to seeing you!<br><br>`;
+//                     emailBody += `Booking Details:<br>`;
+//                     emailBody += `- Hall: ${bookingData.hallName}<br>`;
+//                     emailBody += `- Date: ${mDisplayDate}<br>`;
+//                     emailBody += `- Total Amount: ${formatCurrency(bookingData.total)}<br><br>`;
+//                     emailBody += `Thank you for choosing Kaduna Markets!`;
+
+//                     // Update booking in database
+//                     await updateBookingDate(bookingData.transactionReference);
+
+//                 } else if (transactionStatusApi === 'PENDING') {
+//                     emailBody += `Your payment for the booking of <strong>${bookingData.hallName}</strong> (Transaction Ref: <strong>${bookingData.transactionReference}</strong>) is currently <strong>PENDING</strong>.<br><br>`;
+//                     emailBody += `We are processing your payment. Please allow up to 10 minutes for confirmation. You will receive another email once the status changes. If you do not receive an update within 10 minutes, please contact our support team with your Transaction Reference: <strong>${bookingData.transactionReference}</strong>.<br><br>`;
+//                     emailBody += `Thank you for choosing Kaduna Markets!`;
+
+//                 } else if (transactionStatusApi === 'FAILED') {
+//                     emailBody += `Unfortunately, your payment for the booking of <strong>${bookingData.hallName}</strong> (Transaction Ref: <strong>${bookingData.transactionReference}</strong>) has <strong>FAILED</strong>.<br><br>`;
+//                     emailBody += `Please ensure you have sufficient funds and the correct details. You can try making the payment again or contact our support team immediately for assistance with Transaction Reference: <strong>${bookingData.transactionReference}</strong>.<br><br>`;
+//                     emailBody += `Thank you for your understanding.`;
+
+//                 } else {
+//                     emailBody += `The status of your transaction <strong>${bookingData.transactionReference}</strong> for <strong>${bookingData.hallName}</strong> is currently <strong>${transactionStatusApi}</strong>.<br><br>`;
+//                     emailBody += `We are still processing this. Please check your email within the next 10 minutes for a final confirmation. If you do not receive an update, please contact our support team.<br><br>`;
+//                     emailBody += `Thank you for choosing Kaduna Markets!`;
+//                 }
+
+//                 // Send confirmation email
+//                 const emailSent = await sendConfirmEmail(
+//                     customerEmail,
+//                     emailSubject,
+//                     emailBody,
+//                     bookingData.hallName,
+//                     bookingData.transactionReference,
+//                     bookingData.days,
+//                     bookingData.baseAmount,
+//                     bookingData.total,
+//                     mStartDate,
+//                     mEndDate
+//                 );
+
+//                 // Navigate to confirmation page only if email was sent successfully
+//                 if (emailSent) {
+//                     const confirmData = {
+//                         hallName: bookingData.hallName,
+//                         days: bookingData.days,
+//                         total: bookingData.total,
+//                         baseAmount: bookingData.baseAmount,
+//                         discount: bookingData.discount,
+//                         fromDate: bookingData.fromDate,
+//                         toDate: bookingData.toDate,
+//                         charges: bookingData.charges,
+//                         status: transactionStatusApi,
+//                         transactionReference: bookingData.transactionReference
+//                     };
+
+//                     navigateToConfirm(confirmData);
+//                 } else {
+//                     console.error('Failed to send confirmation email');
+//                     setIsCheckingPayment(false);
+//                 }
+
+//             } else {
+//                 emailBody += `We were unable to retrieve the latest status for your transaction <strong>${bookingData.transactionReference}</strong>. This might be a temporary issue.<br><br>`;
+//                 emailBody += `Please try checking again later or contact our support team with your Transaction Reference: <strong>${bookingData.transactionReference}</strong>.<br><br>`;
+//                 emailBody += `Thank you for choosing Kaduna Markets!`;
+
+//                 // Send error email
+//                 const emailSent = await sendConfirmEmail(
+//                     customerEmail,
+//                     `Issue with Your Hall Booking - Transaction ${bookingData.transactionReference}`,
+//                     emailBody,
+//                     bookingData.hallName,
+//                     bookingData.transactionReference,
+//                     bookingData.days,
+//                     bookingData.baseAmount,
+//                     bookingData.total,
+//                     mStartDate,
+//                     mEndDate
+//                 );
+
+//                 // Navigate even if transaction failed
+//                 if (emailSent) {
+//                     const confirmData = {
+//                         hallName: bookingData.hallName,
+//                         days: bookingData.days,
+//                         total: bookingData.total,
+//                         baseAmount: bookingData.baseAmount,
+//                         discount: bookingData.discount,
+//                         fromDate: bookingData.fromDate,
+//                         toDate: bookingData.toDate,
+//                         charges: bookingData.charges,
+//                         status: 'FAILED',
+//                         transactionReference: bookingData.transactionReference
+//                     };
+
+//                     navigateToConfirm(confirmData);
+//                 } else {
+//                     console.error('Failed to send error email');
+//                     setIsCheckingPayment(false);
+//                 }
+//             }
+
+//         } catch (error) {
+//             console.error('Payment confirmation error:', error);
+//             const mStartDate = formatDate(bookingData.fromDate);
+//             const mEndDate = formatDate(bookingData.toDate);
+
+//             let errorEmailBody = `Dear ${customerFullname || 'Valued Customer'},<br><br>`;
+//             errorEmailBody += `There was a network error while trying to check the status of your payment for the booking of <strong>${bookingData.hallName}</strong> (Transaction Ref: <strong>${bookingData.transactionReference}</strong>).<br><br>`;
+//             errorEmailBody += `This means we couldn't get an immediate update. Please check your email in the next 10 minutes for a confirmation. If you do not receive an update, kindly contact our support team with your Transaction Reference: <strong>${bookingData.transactionReference}</strong>.<br><br>`;
+//             errorEmailBody += `Thank you for your understanding.`;
+
+//             const emailSent = await sendConfirmEmail(
+//                 customerEmail,
+//                 `Action Required: Issue Checking Your Hall Booking Transaction ${bookingData.transactionReference}`,
+//                 errorEmailBody,
+//                 bookingData.hallName,
+//                 bookingData.transactionReference,
+//                 bookingData.days,
+//                 bookingData.baseAmount,
+//                 bookingData.total,
+//                 mStartDate,
+//                 mEndDate
+//             );
+
+//             // Navigate after network error
+//             if (emailSent) {
+//                 const confirmData = {
+//                     hallName: bookingData.hallName,
+//                     days: bookingData.days,
+//                     total: bookingData.total,
+//                     baseAmount: bookingData.baseAmount,
+//                     discount: bookingData.discount,
+//                     fromDate: bookingData.fromDate,
+//                     toDate: bookingData.toDate,
+//                     charges: bookingData.charges,
+//                     status: 'NETWORK_ERROR',
+//                     transactionReference: bookingData.transactionReference
+//                 };
+
+//                 navigateToConfirm(confirmData);
+//             } else {
+//                 console.error('Failed to send network error email');
+//                 setIsCheckingPayment(false);
+//             }
+//         }
+
+
+
+ const sendConfirmEmail = async (
+        to: string,
+        subject: string,
+        body: string,
+        hallName: string,
+        transactionRef: string,
+        numberOfDays: number,
+        baseBookingFee: number,
+        finalBookingAmount: number,
+        startDate: string,
+        endDate: string
+    ): Promise<boolean> => {
+        try {
+            const response = await fetch(
+                `https://kadunamarkets.kdsg.gov.ng/hall/send_email_a.php`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to,
+                        subject,
+                        body,
+                        currentHallName: hallName,
+                        currentTransactionRef: transactionRef,
+                        currentNumberOfDays: numberOfDays,
+                        currentBaseBookingFee: baseBookingFee,
+                        currentFinalBookingAmount: finalBookingAmount,
+                        mStartDate: startDate,
+                        mEndDate: endDate,
+                    })
+                }
+            );
+
+            return response.ok;
+        } catch (error) {
+            console.error('Email sending error:', error);
+            return false;
+        }
+    };
+
+    const updateBookingDate = async (transactionReference: string) => {
+        try {
+            const response = await fetch(
+                `https://kadunamarkets.kdsg.gov.ng/hall/update_date.php`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ transactionReference })
+                }
+            );
+
+            if (!response.ok) throw new Error('Failed to update booking');
+            return response.json();
+        } catch (error) {
+            console.error('Update booking error:', error);
+            throw error;
+        }
+    };
